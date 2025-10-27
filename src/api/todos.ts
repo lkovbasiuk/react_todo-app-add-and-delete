@@ -1,0 +1,22 @@
+import { Todo } from '../types/Todo';
+import { client } from '../utils/fetchClient';
+
+export const USER_ID = 3595;
+
+export const getTodos = () => {
+  return client.get<Todo[]>(`/todos?userId=${USER_ID}`);
+};
+
+export function createTodo({ title, userId, completed }: Omit<Todo, 'id'>) {
+  return client.post<Todo>('/todos', { title, userId, completed });
+}
+
+export function deleteTodos(todoId: number) {
+  return client.delete(`/todos/${todoId}`);
+}
+
+export function deleteCompletedTodos(todos: Todo[]) {
+  const completed = todos.filter(t => t.completed);
+
+  return Promise.all(completed.map(t => client.delete(`/todos/${t.id}`)));
+}
