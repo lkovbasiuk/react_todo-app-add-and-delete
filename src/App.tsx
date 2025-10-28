@@ -80,7 +80,7 @@ export const App: React.FC = () => {
 
   const deleteTodo = (id: number) => {
     setIsInputDisabled(true);
-    setDeletedIds(prev => [...prev, id]);
+    setDeletedIds([id]);
     deleteTodos(id)
       .then(() => {
         setTodos(current => current.filter(t => t.id !== id));
@@ -94,14 +94,14 @@ export const App: React.FC = () => {
       });
   };
 
-  const deleteAllCompleted = (todosCompl: Todo[]) => {
-    const idsToDelete = todosCompl.map(t => t.id);
+  const deleteAllCompleted = (compleatedTodos: Todo[]) => {
+    const idsToDelete = compleatedTodos.map(t => t.id);
 
     setDeletedIds(idsToDelete);
     setIsInputDisabled(true);
-    deleteCompletedTodos(todosCompl)
+    deleteCompletedTodos(idsToDelete)
       .then(() => {
-        setTodos(current => current.filter(t => !t.completed));
+        setTodos(current => current.filter(t => !idsToDelete.includes(t.id)));
       })
       .catch(() => {
         setError(Error.Delete_todo);

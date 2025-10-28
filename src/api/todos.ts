@@ -15,8 +15,6 @@ export function deleteTodos(todoId: number) {
   return client.delete(`/todos/${todoId}`);
 }
 
-export function deleteCompletedTodos(todos: Todo[]) {
-  const completed = todos.filter(t => t.completed);
-
-  return Promise.all(completed.map(t => client.delete(`/todos/${t.id}`)));
+export function deleteCompletedTodos(ids: number[]) {
+  return Promise.all(ids.map(id => client.delete(`/todos/${id}`)));
 }
