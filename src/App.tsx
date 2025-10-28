@@ -94,20 +94,34 @@ export const App: React.FC = () => {
       });
   };
 
-  const deleteAllCompleted = (compleatedTodos: Todo[]) => {
-    const idsToDelete = compleatedTodos.map(t => t.id);
+  const deleteAllCompleted = (completedTodos: Todo[]) => {
+    const idsToDelete = completedTodos.map(t => t.id);
 
     setDeletedIds(idsToDelete);
     setIsInputDisabled(true);
     deleteCompletedTodos(idsToDelete)
-      .then(() => {
-        setTodos(current => current.filter(t => !idsToDelete.includes(t.id)));
+      .then(results => {
+        const fulfilledIds = results
+          .map((r, i) =>
+            r.status === 'fulfilled' && r.value === 1 ? idsToDelete[i] : null,
+          )
+          .filter((id): id is number => id !== null);
+
+        const hasRejected = results.some(r => r.status === 'rejected');
+
+        setTodos(current =>
+          current.filter(todo => !fulfilledIds.includes(todo.id)),
+        );
+
+        if (hasRejected) {
+          setError(Error.Delete_todo);
+        }
       })
       .catch(() => {
         setError(Error.Delete_todo);
       })
       .finally(() => {
-        setDeletedIds(prev => prev.filter(id => !idsToDelete.includes(id)));
+        setDeletedIds([]);
         setIsInputDisabled(false);
       });
   };
