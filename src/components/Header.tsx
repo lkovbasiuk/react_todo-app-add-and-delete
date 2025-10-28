@@ -36,13 +36,13 @@ export const Header: React.FC<Props> = ({
           ref={inputRef}
           data-cy="NewTodoField"
           type="text"
-          className={cn('todoapp__new-todo', {
-            disabled: isInputDisabled,
-          })}
+          className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={title}
           onChange={handleTitleChange}
           onKeyDown={handleKeyDown}
+          disabled={isInputDisabled}
+          autoFocus
         />
       </form>
     </header>

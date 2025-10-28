@@ -8,6 +8,7 @@ interface Props {
   filter: Filter;
   setFilter: (filter: Filter) => void;
   deleteAllCompleted: (todos: Todo[]) => void;
+  isInputDisabled: boolean;
 }
 
 export const Footer: React.FC<Props> = ({
@@ -15,6 +16,7 @@ export const Footer: React.FC<Props> = ({
   filter,
   setFilter,
   deleteAllCompleted,
+  isInputDisabled,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -62,6 +64,7 @@ export const Footer: React.FC<Props> = ({
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         onClick={() => deleteAllCompleted(todos)}
+        disabled={isInputDisabled || todos.every(todo => !todo.completed)}
       >
         Clear completed
       </button>

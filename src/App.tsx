@@ -25,11 +25,17 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState<Filter>(Filter.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [deletedIds, setDeletedIds] = useState<number[]>([]);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    inputRef.current?.focus();
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isInputDisabled]);
+
+  useEffect(() => {
     setError(null);
     getTodos()
       .then(result => {
@@ -48,15 +54,17 @@ export const App: React.FC = () => {
   }, [error]);
 
   const addTodo = ({ title: todoTitle, userId, completed }: Todo) => {
+    const trimmedTitle = todoTitle.trim();
+
     setTempTodo({
       id: 0,
-      title: todoTitle.trim(),
+      title: trimmedTitle,
       userId: USER_ID,
       completed: false,
     });
     setIsInputDisabled(true);
 
-    createTodo({ title: todoTitle, userId, completed })
+    createTodo({ title: trimmedTitle, userId, completed })
       .then(newTodo => {
         setTodos(currentTodos => [...currentTodos, newTodo]);
         setTempTodo(null);
@@ -71,22 +79,36 @@ export const App: React.FC = () => {
   };
 
   const deleteTodo = (id: number) => {
+    setIsInputDisabled(true);
+    setDeletedIds(prev => [...prev, id]);
     deleteTodos(id)
       .then(() => {
         setTodos(current => current.filter(t => t.id !== id));
       })
       .catch(() => {
         setError(Error.Delete_todo);
+      })
+      .finally(() => {
+        setDeletedIds(prev => prev.filter(d => d !== id));
+        setIsInputDisabled(false);
       });
   };
 
   const deleteAllCompleted = (todosCompl: Todo[]) => {
+    const idsToDelete = todosCompl.map(t => t.id);
+
+    setDeletedIds(idsToDelete);
+    setIsInputDisabled(true);
     deleteCompletedTodos(todosCompl)
       .then(() => {
         setTodos(current => current.filter(t => !t.completed));
       })
       .catch(() => {
         setError(Error.Delete_todo);
+      })
+      .finally(() => {
+        setDeletedIds(prev => prev.filter(id => !idsToDelete.includes(id)));
+        setIsInputDisabled(false);
       });
   };
 
@@ -104,7 +126,6 @@ export const App: React.FC = () => {
       }
 
       addTodo({ title, userId: USER_ID, completed: false });
-      setTitle('');
     }
   };
 
@@ -132,13 +153,14 @@ export const App: React.FC = () => {
           isInputDisabled={isInputDisabled}
         />
 
-        {!isLoading && todos.length > 0 && (
+        {!isLoading && (todos.length > 0 || tempTodo) && (
           <TodoList
             todos={todos}
             filter={filter}
             handleCompletedChange={handleCompletedChange}
             tempTodo={tempTodo}
             deleteTodo={deleteTodo}
+            deletedIds={deletedIds}
           />
         )}
 
@@ -148,6 +170,7 @@ export const App: React.FC = () => {
             filter={filter}
             setFilter={setFilter}
             deleteAllCompleted={deleteAllCompleted}
+            isInputDisabled={isInputDisabled}
           />
         )}
       </div>

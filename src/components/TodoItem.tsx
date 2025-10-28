@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import { Todo } from '../types/Todo';
 
 interface Props {
@@ -28,7 +29,7 @@ export const TodoItem: React.FC<Props> = ({
       </label>
 
       <span data-cy="TodoTitle" className="todo__title">
-        {loading ? 'Todo is being saved now' : todo.title}
+        {todo.title}
       </span>
 
       {/* Remove button appears only on hover */}
@@ -39,16 +40,18 @@ export const TodoItem: React.FC<Props> = ({
         onClick={() => {
           deleteTodo(todo.id);
         }}
+        disabled={loading}
       >
         ×
       </button>
 
-      {loading && (
-        <div data-cy="TodoLoader" className="modal overlay is-active">
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
-      )}
+      <div
+        data-cy="TodoLoader"
+        className={cn('modal overlay', { 'is-active': loading })}
+      >
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
     </div>
   );
 };

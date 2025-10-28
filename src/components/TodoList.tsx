@@ -9,6 +9,7 @@ interface Props {
   handleCompletedChange: (id: number) => void;
   tempTodo: Todo | null;
   deleteTodo: (id: number) => void;
+  deletedIds: number[];
 }
 
 export const TodoList: React.FC<Props> = ({
@@ -17,6 +18,7 @@ export const TodoList: React.FC<Props> = ({
   handleCompletedChange,
   tempTodo,
   deleteTodo,
+  deletedIds,
 }) => {
   const visibleTodos = useMemo(() => {
     return todos.filter(todo => {
@@ -41,6 +43,7 @@ export const TodoList: React.FC<Props> = ({
           todo={todo}
           handleCompletedChange={handleCompletedChange}
           deleteTodo={deleteTodo}
+          loading={deletedIds.includes(todo.id)}
         />
       ))}
 
