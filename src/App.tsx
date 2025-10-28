@@ -80,7 +80,7 @@ export const App: React.FC = () => {
 
   const deleteTodo = (id: number) => {
     setIsInputDisabled(true);
-    setDeletedIds([id]);
+    setDeletedIds(prev => [...prev, id]);
     deleteTodos(id)
       .then(() => {
         setTodos(current => current.filter(t => t.id !== id));

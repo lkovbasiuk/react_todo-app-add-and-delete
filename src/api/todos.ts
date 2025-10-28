@@ -16,5 +16,5 @@ export function deleteTodos(todoId: number) {
 }
 
 export function deleteCompletedTodos(ids: number[]) {
-  return Promise.all(ids.map(id => client.delete(`/todos/${id}`)));
+  return Promise.allSettled(ids.map(id => client.delete(`/todos/${id}`)));
 }
